@@ -5,7 +5,6 @@ var port = process.env.port || 1337;
 var fs = require('fs'); 
 var io = require('socket.io');
 var PythonShell = require('python-shell'); 
-
 // web content
 var client = fs.readFileSync('client.html'); 
 
@@ -19,36 +18,37 @@ var server = http.createServer(function (req, res) {
 var ioserver = io(server);
 
 ioserver.on('connection', function (socket) {
+    console.log("A user connected!" + socket.id); 
     // send the std_out back
     socket.on('run', function (req, res) {
+        var uid = socket.id.slice(1, 22); 
         // write a temp file for .py code
-        var uid = Date.now(); 
-        var source = "./tmp/input/" + uid + ".py"; 
-        var dist = "./tmp/output/" + uid; 
+        var time = Date.now();
+        var rand = req.rand; 
+        var source = "./tmp/input/" + time + rand + uid + ".py"; 
+        var dist = "./tmp/output/" + time + rand + uid;  
         fs.writeFile(source, req.code, function (err) {
             if (err) {
                 return console.log(err);
             }
-            console.log("The input file was saved!");
+            //console.log("The input file was saved!");
         });
         fs.writeFile(dist, "", function (err) {
             if (err) {
                 return console.log(err);
             }
-            console.log("The output file was saved!");
+            //console.log("The output file was saved!");
         });
         
         // run .py code and hear from stdout
-        var pyshell = new PythonShell(source); 
+        var pyshell = new PythonShell(source);
+        
         pyshell.on('message', function (stdout) {
             var temp = stdout;
-            console.log(temp);
-            fs.appendFile(dist, temp, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log("The output file was appended!");
-            });
+            //console.log(temp);
+            //var time = Date.now();
+            //console.log(time);
+            fs.appendFileSync(dist, temp); 
         });
         
         pyshell.end(function () {
@@ -56,10 +56,10 @@ ioserver.on('connection', function (socket) {
                 if (err) {
                     return console.log(err);
                 }
-                console.log("hello read file");
-                console.log(data);
+                //console.log("hello read file");
+                //console.log(data);
                 res({
-                    timestamp: Date.now(), 
+                    timestamp: time, 
                     file: pyshell.script, 
                     code: req.code, 
                     result: data,  
@@ -68,8 +68,6 @@ ioserver.on('connection', function (socket) {
             
         });
     });
-
-
 });
 
 // run the server 

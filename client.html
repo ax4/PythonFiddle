@@ -8,25 +8,28 @@
     <p><textarea rows="4" cols="50" id="code">
 print(100)
 print(200)
+print(300)
     </textarea></p>
     <p><input type='button' id='run' value='Run !' /></p>
-    <div id='message'></div>
+    <p><textarea rows="4" cols="50" id="message">
+    </textarea></p>
     <script src='https://cdn.socket.io/socket.io-1.4.5.js'></script>
     <script>
-        var socket = io(window.location.origin); 
+        var socket = io(window.location.origin);
         var connection = -1; 
         socket.on('connect', function () { connection += 1; });
 
         // emit the .py code from input box
         document.getElementById('run').onclick = function () {
             socket.emit('run', {
+                    rand: Math.floor((Math.random() * 900)+100), // a random number from 100 to 999
                     code: document.getElementById('code').value, 
                 },
                 function (res) {
-                document.getElementById('message').innerHTML += (
-                    '<p>Timestamp: ' + res.timestamp + '</p>'+
-                    '<p>Code: ' + res.code + '</p>'+
-                    '<p>StdOut: ' + res.result + '</p>'
+                document.getElementById('message').innerHTML = (
+                    'Runtime: ' + res.timestamp + '\n' +
+                    'FileLoc: ' + res.file + '\n' + 
+                    'StdOut: ' + '\n' + res.result + '\n'
                 )
             });
         };
