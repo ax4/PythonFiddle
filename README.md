@@ -7,4 +7,5 @@ To run
 ```
 npm install python-shell
 npm install sockect.io
+npm install cron
 ```
