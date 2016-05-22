@@ -6,6 +6,7 @@ To run
 
 ```
 npm install python-shell
-npm install sockect.io
+npm install socket.io
 npm install cron
+nodejs server.js
 ```
