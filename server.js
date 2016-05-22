@@ -68,7 +68,7 @@ ioserver.on('connection', function (socket) {
             //console.log(temp);
             //var time = Date.now();
             //console.log(time);
-            fs.appendFileSync(dist, temp); 
+            fs.appendFileSync(dist, temp + '\n'); 
         });
         
         pyshell.end(function () {
